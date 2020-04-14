@@ -181,15 +181,21 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 BluetoothDevice device=intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 //case1: Already bonded
                 if(device.getBondState()==BluetoothDevice.BOND_BONDED){
-                    Log.d("BTtag","Already bonded");
+                    Toast.makeText(MainActivity.this, "BONDED!", Toast.LENGTH_SHORT).show();
+                    Intent myIntent = new Intent(getApplicationContext(),page2.class);
+                    startActivity(myIntent);
                 }
                 //case2: Creating a bond
                 if(device.getBondState()==BluetoothDevice.BOND_BONDING){
                     Log.d("BTtag","Bonding");
+                    Toast.makeText(MainActivity.this, "BONDING!", Toast.LENGTH_LONG).show();
+
+                    
                 }
                 //case3: breaking a bond
                 if(device.getBondState()==BluetoothDevice.BOND_NONE){
                     Log.d("BTtag","Not bonded");
+                    Toast.makeText(MainActivity.this, "NOT BONDED!", Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -257,6 +263,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 for (BluetoothDevice device : pairedDevices) {
                     if(deviceAddress.equals(device.getAddress())){
                         canconnect=true;
+                        
                         break;
                     }
                 }
@@ -268,7 +275,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             if(!canconnect) {
                 Log.d("BTtag", "Trying to pair with " + deviceName);
                 deviceInfoList.get(i).createBond();
+
+
             }
+
         }
 
     }
