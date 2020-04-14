@@ -13,9 +13,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -28,18 +32,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 
-public class MainActivity extends AppCompatActivity  {
-Button scanbutton;
-ListView scanlistview;
-Button keyboard;
-public ArrayList<String> stringArrayList=new ArrayList<>();
-public ArrayList<BluetoothDevice> stringArrayList1=new ArrayList();
-ArrayAdapter<String> arrayAdapter;
-BluetoothAdapter myAdapter=BluetoothAdapter.getDefaultAdapter();
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
+    Button scanbutton;
+    ListView scanlistview;
+    Button keyboard;
+    public ArrayList<String> stringArrayList=new ArrayList<>();
+    public ArrayList<BluetoothDevice> deviceInfoList=new ArrayList();
+    ArrayAdapter<String> arrayAdapter;
+    BluetoothAdapter myAdapter=BluetoothAdapter.getDefaultAdapter();
 
-private final int REQUEST_PERMISSION_ACCESS_COARSE_LOCATION =1;
+    private final int REQUEST_PERMISSION_ACCESS_COARSE_LOCATION =1;
     Animation middleAnimation;
     TextView a;
     @Override
@@ -55,7 +60,7 @@ private final int REQUEST_PERMISSION_ACCESS_COARSE_LOCATION =1;
         scanlistview=(ListView) findViewById(R.id.scanlistview);
         Button btnONOFF = (Button) findViewById(R.id.btnONOFF);
         keyboard=(Button) findViewById(R.id.keyboard);
-
+        scanlistview.setOnItemClickListener(MainActivity.this);
 
         scanbutton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,14 +91,31 @@ private final int REQUEST_PERMISSION_ACCESS_COARSE_LOCATION =1;
 
         IntentFilter intentFilter=new IntentFilter(BluetoothDevice.ACTION_FOUND);
         registerReceiver(myReceiever,intentFilter);
-        arrayAdapter=new ArrayAdapter<String>(getApplicationContext(),android.R.layout.simple_list_item_1,stringArrayList);
+        arrayAdapter=new ArrayAdapter<String>(getApplicationContext(),android.R.layout.simple_list_item_1,stringArrayList) {
+
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+
+                View view = super.getView(position, convertView, parent);
+                TextView text = (TextView) view.findViewById(android.R.id.text1);
+                text.setTextColor(Color.WHITE);
+
+                return view;
+            }
+        };
         scanlistview.setAdapter(arrayAdapter);
         showExplanation("Warning", "ask for permission", Manifest.permission.ACCESS_COARSE_LOCATION, REQUEST_PERMISSION_ACCESS_COARSE_LOCATION);
         IntentFilter filter=new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
         registerReceiver(myReceiever1,filter);
 
     }
+    @Override
+    protected  void  onDestroy() {
 
+        super.onDestroy();
+        unregisterReceiver(myReceiever);
+        unregisterReceiver(myReceiever1);
+    }
     public void enableOFF(){
         if(!myAdapter.isEnabled()){
             Toast.makeText(MainActivity.this, "Enabling BT!", Toast.LENGTH_SHORT).show();
@@ -135,7 +157,17 @@ private final int REQUEST_PERMISSION_ACCESS_COARSE_LOCATION =1;
 
             if(BluetoothDevice.ACTION_FOUND.equals(action)){
                 BluetoothDevice device=intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                stringArrayList.add(device.getName());
+                String devicename=device.getName();
+                boolean newdevice=true;
+                for(String d:stringArrayList ){
+                    if(devicename.equals(d)){
+                        newdevice=false;
+                        break;
+                    }
+                }
+                if(newdevice)
+                    stringArrayList.add(device.getName());
+                deviceInfoList.add(device);
                 arrayAdapter.notifyDataSetChanged();
             }
         }
@@ -149,18 +181,29 @@ private final int REQUEST_PERMISSION_ACCESS_COARSE_LOCATION =1;
                 BluetoothDevice device=intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 //case1: Already bonded
                 if(device.getBondState()==BluetoothDevice.BOND_BONDED){
-
+                    Log.d("BTtag","Already bonded");
                 }
                 //case2: Creating a bond
                 if(device.getBondState()==BluetoothDevice.BOND_BONDING){
-
+                    Log.d("BTtag","Bonding");
                 }
                 //case3: breaking a bond
                 if(device.getBondState()==BluetoothDevice.BOND_NONE){
-
+                    Log.d("BTtag","Not bonded");
                 }
 
             }
+//            else{
+//                Set<BluetoothDevice> pairedDevices = myAdapter.getBondedDevices();
+//                if (pairedDevices.size() > 0) {
+//                    // Loop through paired devices
+//                    for (BluetoothDevice device : pairedDevices) {
+//
+//
+//                        Log.e("Mac Addressess","are:  "+myAdapter.getRemoteDevice(device.getName()));
+//                    }
+//                }
+//            }
         }
     };
     public void onRequestPermissionsResult(
@@ -198,5 +241,35 @@ private final int REQUEST_PERMISSION_ACCESS_COARSE_LOCATION =1;
     }
 
 
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        myAdapter.cancelDiscovery();
+        Log.d("BTtag","You clicked on a device");
+        String deviceName=deviceInfoList.get(i).getName();
+        String deviceAddress=deviceInfoList.get(i).getAddress();
+        Log.d("BTtag","Size is: "+deviceInfoList.size());
+        Log.d("BTtag","You clicked on "+deviceName+" "+i);
+        boolean canconnect=false;
+        try {
+            Set<BluetoothDevice> pairedDevices = myAdapter.getBondedDevices();
+            if (pairedDevices.size() > 0) {
+                // Loop through paired devices
+                for (BluetoothDevice device : pairedDevices) {
+                    if(deviceAddress.equals(device.getAddress())){
+                        canconnect=true;
+                        break;
+                    }
+                }
+            }
+        }catch(Exception e){
+            Log.d("BTtag",e.getMessage());
+        }
+        if(Build.VERSION.SDK_INT> Build.VERSION_CODES.JELLY_BEAN_MR2){
+            if(!canconnect) {
+                Log.d("BTtag", "Trying to pair with " + deviceName);
+                deviceInfoList.get(i).createBond();
+            }
+        }
 
+    }
 }
