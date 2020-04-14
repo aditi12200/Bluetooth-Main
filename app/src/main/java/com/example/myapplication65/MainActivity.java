@@ -38,7 +38,7 @@ import java.util.Set;
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
     Button scanbutton;
     ListView scanlistview;
-    Button keyboard;
+//    Button keyboard;
     public ArrayList<String> stringArrayList=new ArrayList<>();
     public ArrayList<BluetoothDevice> deviceInfoList=new ArrayList();
     ArrayAdapter<String> arrayAdapter;
@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         scanbutton=(Button) findViewById(R.id.scanbutton);
         scanlistview=(ListView) findViewById(R.id.scanlistview);
         Button btnONOFF = (Button) findViewById(R.id.btnONOFF);
-        keyboard=(Button) findViewById(R.id.keyboard);
+//        keyboard=(Button) findViewById(R.id.keyboard);
         scanlistview.setOnItemClickListener(MainActivity.this);
 
         scanbutton.setOnClickListener(new View.OnClickListener() {
@@ -79,14 +79,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             }
 
         });
-        keyboard.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
-            }
-
-        });
+//        keyboard.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
+//            }
+//
+//        });
 
 
         IntentFilter intentFilter=new IntentFilter(BluetoothDevice.ACTION_FOUND);
@@ -159,8 +159,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 BluetoothDevice device=intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 String devicename=device.getName();
                 boolean newdevice=true;
-                for(String d:stringArrayList ){
-                    if(devicename.equals(d)){
+                for(BluetoothDevice d: deviceInfoList){
+                    if(device.equals(d)){
                         newdevice=false;
                         break;
                     }
@@ -183,6 +183,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 if(device.getBondState()==BluetoothDevice.BOND_BONDED){
                     Toast.makeText(MainActivity.this, "BONDED!", Toast.LENGTH_SHORT).show();
                     Intent myIntent = new Intent(getApplicationContext(),page2.class);
+                    myIntent.putExtra("bluetoothDevice",device);
                     startActivity(myIntent);
                 }
                 //case2: Creating a bond
@@ -263,7 +264,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 for (BluetoothDevice device : pairedDevices) {
                     if(deviceAddress.equals(device.getAddress())){
                         canconnect=true;
-                        
                         break;
                     }
                 }
@@ -274,12 +274,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         if(Build.VERSION.SDK_INT> Build.VERSION_CODES.JELLY_BEAN_MR2){
             if(!canconnect) {
                 Log.d("BTtag", "Trying to pair with " + deviceName);
+                Toast.makeText(MainActivity.this, "Trying to pair with " + deviceName, Toast.LENGTH_SHORT).show();
                 deviceInfoList.get(i).createBond();
-
-
+            }else{
+                Toast.makeText(MainActivity.this, "Connecting "+deviceName, Toast.LENGTH_SHORT).show();
+                Intent myIntent = new Intent(getApplicationContext(),page2.class);
+                myIntent.putExtra("bluetoothDevice",deviceInfoList.get(i));
+                startActivity(myIntent);
             }
-
         }
-
     }
 }
