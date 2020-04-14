@@ -12,3 +12,6 @@
 /captures
 .externalNativeBuild
 .cxx
+/PCBluetoothServer/nbproject/private/
+/PCBluetoothServer/build/
+/PCBluetoothServer/dist/

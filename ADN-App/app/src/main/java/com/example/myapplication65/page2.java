@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -28,6 +29,8 @@ public class page2 extends AppCompatActivity {
     BluetoothDevice device;
     BluetoothSocket socket;
     DataOutputStream dos;
+    boolean isCaps=false;
+    private String TAG="BTtag";
     private static UUID device_UUID=UUID.fromString("d7d5d184-7e5f-11ea-bc55-0242ac130003");
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,16 +55,56 @@ public class page2 extends AppCompatActivity {
             socket=device.createRfcommSocketToServiceRecord(device_UUID);
             socket.connect();
             dos = new DataOutputStream(socket.getOutputStream());
-            while(true) {
-                dos.writeChar('x');
-                if(breaknow)
-                 break;
-            }// for example
-            socket.close();
+//            while(true) {
+//                dos.writeChar('x');
+//                if(breaknow)
+//                 break;
+//            }// for example
+//            socket.close();
         } catch (IOException e) {
             Log.e("BTtag",e.getMessage());
         }
 
         Toast.makeText(this, ""+device.getName(), Toast.LENGTH_SHORT).show();
     }
+    @Override
+    protected  void  onDestroy(){
+        super.onDestroy();
+        try {
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        Log.d(TAG,"You pressed "+keyCode);
+        try {
+            if (keyCode >= 29 && keyCode <= 54) {
+                if (event.isCapsLockOn()) {
+                    dos.writeInt(keyCode + 36);
+                    dos.flush();
+                }else{
+                    dos.writeInt(keyCode+68);
+                    dos.flush();
+                }
+            }else if(keyCode>=7 && keyCode<=16){
+                dos.writeInt(keyCode+41);
+                dos.flush();
+            }
+            else {
+                switch (keyCode) {
+//                    case 59:
+//                        isCaps=(isCaps)?(false):(true);
+//                        break;
+                    default:
+                     break;
+                }
+            }
+        }catch (Exception e){
+
+        }
+        return super.onKeyDown(keyCode, event);
+        }
 }
