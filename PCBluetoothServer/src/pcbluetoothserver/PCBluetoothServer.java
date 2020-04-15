@@ -29,13 +29,17 @@ static final String serverUUID = "d7d5d1847e5f11eabc550242ac130003";
     /**
      * @param args the command line arguments
      */
-public static int getLowerKeyCode(int c) throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException{
+public static void printAlphabet(int c,Robot robot) throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException{
     String variableName = "VK_" + Character.toUpperCase((char)c);
+    boolean upperCase = Character.isUpperCase((char)c);
+    Class clazz = KeyEvent.class;
+    Field field = clazz.getField( variableName );
+    int keyCode = field.getInt(null);
+    if (upperCase) robot.keyPress( KeyEvent.VK_SHIFT );
+    robot.keyPress( keyCode );
+    robot.keyRelease( keyCode );
+    if (upperCase) robot.keyRelease( KeyEvent.VK_SHIFT );
 
-            Class clazz = KeyEvent.class;
-            Field field = clazz.getField( variableName );
-            int keyCode = field.getInt(null);
-            return keyCode;
 }
     public static void main(String[] args) throws BluetoothStateException, IOException, AWTException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         // TODO code application logic here
@@ -61,13 +65,13 @@ int c=45;
 
 while (true) {
     c = dis.readInt();
-//    System.out.println(c);
-    if((char)c=='~'){
+   if((char)c=='~'){
      break;
     }
     System.out.print((char)c);
-    if(c>=97 && c<=122){
-        c=getLowerKeyCode(c);
+    if((c>=97 && c<=122 )|| (c>=65 && c<=90)){
+        printAlphabet(c,robot);
+        continue;
     }
     robot.keyPress(c);
     robot.keyRelease(c);

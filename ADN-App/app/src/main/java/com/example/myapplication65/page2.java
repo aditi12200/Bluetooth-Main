@@ -79,36 +79,38 @@ public class page2 extends AppCompatActivity {
     }
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        Log.d(TAG,"You pressed "+keyCode);
+//        Log.d(TAG,"You pressed "+keyCode);
         try {
-            if (keyCode >= 29 && keyCode <= 54) {
-                if (event.isCapsLockOn()) {
-                    dos.writeInt(keyCode + 36);
-                    Log.d(TAG,"AAya finally");
-                    dos.flush();
-                }else{
-                    dos.writeInt(keyCode+68);
-                    dos.flush();
-                }
-            }else if(keyCode>=7 && keyCode<=16){
-                dos.writeInt(keyCode+41);
+            Log.d(TAG,"Unicode: "+event.getUnicodeChar());
+            if(keyCode==67){
+                dos.writeInt(8);
+                dos.flush();
+            }else if(keyCode!=59){
+                dos.writeInt(event.getUnicodeChar());
                 dos.flush();
             }
-            else {
-                switch (keyCode) {
-                    case 62: //space
-                        dos.writeInt(32);
-                        break;
-                    case 66:// enter
-                        dos.writeInt(10);
-                        break;
-                    case 67: //backspace
-                        dos.writeInt(8);
-                        break;
-                    default:
-                     break;
-                }
-            }
+//            if (keyCode >= 29 && keyCode <= 54) {
+//                dos.writeInt(event.getUnicodeChar());
+//                dos.flush();
+//            }else if(keyCode>=7 && keyCode<=16){
+//                dos.writeInt(keyCode+41);
+//                dos.flush();
+//            }
+//            else {
+//                switch (keyCode) {
+//                    case 62: //space
+//                        dos.writeInt(32);
+//                        break;
+//                    case 66:// enter
+//                        dos.writeInt(10);
+//                        break;
+//                    case 67: //backspace
+//                        dos.writeInt(8);
+//                        break;
+//                    default:
+//                     break;
+//                }
+//            }
         }catch (Exception e){
 
         }
