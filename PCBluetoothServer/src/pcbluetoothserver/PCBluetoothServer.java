@@ -14,6 +14,10 @@ import javax.bluetooth.LocalDevice;
 import javax.microedition.io.Connector;
 import javax.microedition.io.StreamConnection;
 import javax.microedition.io.StreamConnectionNotifier;
+import java.awt.AWTException; 
+import java.awt.Robot; 
+import java.awt.event.KeyEvent; 
+import java.lang.reflect.Field;
 /**
  *
  * @author dev
@@ -25,8 +29,17 @@ static final String serverUUID = "d7d5d1847e5f11eabc550242ac130003";
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) throws BluetoothStateException, IOException {
+public static int getLowerKeyCode(int c) throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException{
+    String variableName = "VK_" + Character.toUpperCase((char)c);
+
+            Class clazz = KeyEvent.class;
+            Field field = clazz.getField( variableName );
+            int keyCode = field.getInt(null);
+            return keyCode;
+}
+    public static void main(String[] args) throws BluetoothStateException, IOException, AWTException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         // TODO code application logic here
+        Robot robot=new Robot();
         LocalDevice localDevice = null;
     try {
         localDevice = LocalDevice.getLocalDevice();
@@ -44,16 +57,67 @@ StreamConnection connection = server.acceptAndOpen(); // Wait until client conne
 System.out.println("Connected");
 DataInputStream dis = connection.openDataInputStream();
 
-int c;
+int c=45;
+
 while (true) {
     c = dis.readInt();
+//    System.out.println(c);
     if((char)c=='~'){
      break;
     }
     System.out.print((char)c);
+    if(c>=97 && c<=122){
+        c=getLowerKeyCode(c);
+    }
+    robot.keyPress(c);
+    robot.keyRelease(c);
 }
-
 connection.close();
     }
-    
+   
 }
+
+
+
+
+
+
+
+
+//    try {
+////        Thread.sleep(5000);
+//    } catch (InterruptedException ex) {
+//        Logger.getLogger(PCBluetoothServer.class.getName()).log(Level.SEVERE, null, ex);
+//    }
+//robot.keyPress(KeyEvent.VK_SHIFT);
+//        robot.delay(100);
+//
+//robot.keyPress(KeyEvent.VK_A);
+//    robot.delay(100);
+//    robot.keyRelease(KeyEvent.VK_A);
+//    robot.delay(100);
+//    robot.keyRelease(KeyEvent.VK_SHIFT);
+//            robot.delay(100);
+// try
+//        {
+//            String letter="a";
+//            boolean upperCase = Character.isUpperCase( letter.charAt(0) );
+//            String variableName = "VK_" + letter.toUpperCase();
+//
+//            Class clazz = KeyEvent.class;
+//            Field field = clazz.getField( variableName );
+//            int keyCode = field.getInt(null);
+////            Thread.sleep(6000);
+////            robot.delay(1000);
+//
+//            if (upperCase) robot.keyPress( KeyEvent.VK_SHIFT );
+//
+//            robot.keyPress( keyCode );
+//            robot.keyRelease( keyCode );
+//
+//            if (upperCase) robot.keyRelease( KeyEvent.VK_SHIFT );
+//        }
+//        catch(Exception e)
+//        {
+//            System.out.println(e);
+//        }
