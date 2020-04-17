@@ -29,6 +29,23 @@
         android:textAlignment="center"
         android:textColor="@color/green"
         android:textSize="65dp" />
+    <EditText
+        android:id="@+id/input"
+        android:layout_width="wrap_content"
+        android:layout_height="69dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="290dp"
+        android:layout_marginEnd="27dp"
+        android:layout_marginBottom="372dp"
+        android:fontFamily="@font/baloo"
+        android:background="@drawable/custom_textbox"
+        android:drawablePadding="10dp"
+        android:hint="Enter text"
+        android:textSize="32dp" />
 
     <Button
         android:id="@+id/keyboard"

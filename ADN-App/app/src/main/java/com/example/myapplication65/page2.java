@@ -18,6 +18,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,6 +30,7 @@ public class page2 extends AppCompatActivity {
     Button keyboard;
     Animation middleAnimation;
     TextView a;
+    EditText Input;
     BluetoothDevice device;
     BluetoothSocket socket;
     DataOutputStream dos;
@@ -44,6 +46,8 @@ public class page2 extends AppCompatActivity {
         middleAnimation = AnimationUtils.loadAnimation(this, R.anim.middle_animation);
         a.setAnimation(middleAnimation);
         keyboard=(Button) findViewById(R.id.keyboard);
+        Input=(EditText) findViewById(R.id.input) ;
+        Input.setTextColor(Color.WHITE);
         keyboard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
