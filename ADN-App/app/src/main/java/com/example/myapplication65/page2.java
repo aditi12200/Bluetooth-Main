@@ -1,11 +1,14 @@
 package com.example.myapplication65;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -52,9 +55,10 @@ public class page2 extends AppCompatActivity {
         device=getIntent().getParcelableExtra("bluetoothDevice");
         boolean breaknow=false;
         try {
-            socket=device.createRfcommSocketToServiceRecord(device_UUID);
-            socket.connect();
-            dos = new DataOutputStream(socket.getOutputStream());
+//            socket=device.createRfcommSocketToServiceRecord(device_UUID);
+//            socket.connect();
+//            dos = new DataOutputStream(socket.getOutputStream());
+            createConnection();
 //            while(true) {
 //                dos.writeChar('x');
 //                if(breaknow)
@@ -63,10 +67,43 @@ public class page2 extends AppCompatActivity {
 //            socket.close();
         } catch (IOException e) {
             Log.e("BTtag",e.getMessage());
+            showErrorScreen();
         }
 
         Toast.makeText(this, ""+device.getName(), Toast.LENGTH_SHORT).show();
     }
+
+    private void showErrorScreen() {
+        AlertDialog.Builder a=new AlertDialog.Builder(page2.this);
+        a.setMessage("Connection lost with the device! Please try again")
+                .setNegativeButton("Back ", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
+                }).setPositiveButton("Try Again", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                try {
+                    createConnection();
+                }catch (Exception e){
+                    showErrorScreen();
+                }
+            }
+        }).setCancelable(false);
+        final AlertDialog p=a.create();
+        p.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialog) {
+                p.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(Color.parseColor("#ff0000"));
+                p.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(Color.parseColor("#008000"));
+            }
+        });
+
+        p.setTitle("PC not responding");
+        p.show();
+    }
+
     @Override
     protected  void  onDestroy(){
         super.onDestroy();
@@ -112,8 +149,15 @@ public class page2 extends AppCompatActivity {
 //                }
 //            }
         }catch (Exception e){
-
+           showErrorScreen();
         }
         return super.onKeyDown(keyCode, event);
         }
+
+    private void createConnection() throws  IOException{
+        socket=device.createRfcommSocketToServiceRecord(device_UUID);
+        socket.connect();
+        dos = new DataOutputStream(socket.getOutputStream());
+    }
+
 }
