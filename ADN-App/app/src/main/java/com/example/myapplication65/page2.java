@@ -130,7 +130,9 @@ public class page2 extends AppCompatActivity {
             if(keyCode==67){
                 dos.writeInt(8);
                 text = Input.getText().toString();
-                Input.setText(text.substring(0,text.length()-1));
+                try {
+                    Input.setText(text.substring(0, text.length() - 1));
+                }catch (Exception e){}
                 dos.flush();
             }else if(keyCode!=59){
                 dos.writeInt(event.getUnicodeChar());

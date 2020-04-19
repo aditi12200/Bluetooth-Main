@@ -44,6 +44,8 @@
         android:fontFamily="@font/baloo"
         android:background="@drawable/custom_textbox"
         android:drawablePadding="10dp"
+        android:inputType="textMultiLine"
+        android:textColorHint="#FFFFFFFF"
         android:hint="Enter text"
         android:textSize="32dp" />
 
