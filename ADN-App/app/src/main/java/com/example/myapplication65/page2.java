@@ -48,6 +48,18 @@ public class page2 extends AppCompatActivity {
         keyboard=(Button) findViewById(R.id.keyboard);
         Input=(EditText) findViewById(R.id.input) ;
         Input.setTextColor(Color.WHITE);
+//        Input.setOnKeyListener(new EditText.OnKeyListener() {
+//            @Override
+//            public boolean onKey(View v, int keyCode, KeyEvent event) {
+//                if (event.getAction()==KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
+//                    onKeyDown(keyCode,event);
+//                    Log.d(TAG,"Here");
+//                    return true;
+//                }
+//                return false;
+//            }
+//        });
+        Input.setEnabled(false);
         keyboard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -59,16 +71,7 @@ public class page2 extends AppCompatActivity {
         device=getIntent().getParcelableExtra("bluetoothDevice");
         boolean breaknow=false;
         try {
-//            socket=device.createRfcommSocketToServiceRecord(device_UUID);
-//            socket.connect();
-//            dos = new DataOutputStream(socket.getOutputStream());
             createConnection();
-//            while(true) {
-//                dos.writeChar('x');
-//                if(breaknow)
-//                 break;
-//            }// for example
-//            socket.close();
         } catch (IOException e) {
             Log.e("BTtag",e.getMessage());
             showErrorScreen();
@@ -120,38 +123,22 @@ public class page2 extends AppCompatActivity {
     }
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-//        Log.d(TAG,"You pressed "+keyCode);
+//        Log.d(TAG,"You pressed "+
+        String text;
         try {
             Log.d(TAG,"Unicode: "+event.getUnicodeChar());
             if(keyCode==67){
                 dos.writeInt(8);
+                text = Input.getText().toString();
+                Input.setText(text.substring(0,text.length()-1));
                 dos.flush();
             }else if(keyCode!=59){
                 dos.writeInt(event.getUnicodeChar());
+                text = Input.getText().toString();
+                Input.setText(text+(char)event.getUnicodeChar());
                 dos.flush();
             }
-//            if (keyCode >= 29 && keyCode <= 54) {
-//                dos.writeInt(event.getUnicodeChar());
-//                dos.flush();
-//            }else if(keyCode>=7 && keyCode<=16){
-//                dos.writeInt(keyCode+41);
-//                dos.flush();
-//            }
-//            else {
-//                switch (keyCode) {
-//                    case 62: //space
-//                        dos.writeInt(32);
-//                        break;
-//                    case 66:// enter
-//                        dos.writeInt(10);
-//                        break;
-//                    case 67: //backspace
-//                        dos.writeInt(8);
-//                        break;
-//                    default:
-//                     break;
-//                }
-//            }
+
         }catch (Exception e){
            showErrorScreen();
         }
