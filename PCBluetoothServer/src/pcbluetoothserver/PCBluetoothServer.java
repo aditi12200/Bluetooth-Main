@@ -98,19 +98,19 @@ localDevice.setDiscoverable(DiscoveryAgent.GIAC); // Advertising the service
 
 String url = "btspp://localhost:" + serverUUID + ";name=BlueToothServer";
 StreamConnectionNotifier server = (StreamConnectionNotifier) Connector.open(url);
-
+while(true){
+ System.out.println("New Session started");
 StreamConnection connection = server.acceptAndOpen(); // Wait until client connects
 //=== At this point, two devices should be connected ===//
-System.out.println("Connected ");
+System.out.println("Connected");
 DataInputStream dis = connection.openDataInputStream();
 
 int c;
 
 while (true) {
+    try{
     c = dis.readInt();
-   if(c==9850){
-     break;
-    }    
+       
 //   System.out.print((char)c);
    if(c==39){
         robot.keyPress(KeyEvent.VK_DEAD_ACUTE);
@@ -125,57 +125,21 @@ while (true) {
    }else if((c>=97 && c<=122 )|| (c>=65 && c<=90)){
         printAlphabet(c,robot);
         continue;
+    }else{
+       try{
+        robot.keyPress(c);
+        robot.keyRelease(c);
+       }catch(Exception e){}
+   }
+    }catch(Exception e){
+//        e.printStackTrace();
+        break;
     }
-    robot.keyPress(c);
-    robot.keyRelease(c);
 }
+System.out.println("Connection lost");
 connection.close();
-//robot.keyPress(KeyEvent.VK_DEAD_ACUTE);
-//robot.keyRelease(KeyEvent.VK_DEAD_ACUTE);
-    }
 }
 
-
-
-
-
-
-
-
-//    try {
-////        Thread.sleep(5000);
-//    } catch (InterruptedException ex) {
-//        Logger.getLogger(PCBluetoothServer.class.getName()).log(Level.SEVERE, null, ex);
-//    }
-//robot.keyPress(KeyEvent.VK_SHIFT);
-//        robot.delay(100);
+    }
+}
 //
-//robot.keyPress(KeyEvent.VK_A);
-//    robot.delay(100);
-//    robot.keyRelease(KeyEvent.VK_A);
-//    robot.delay(100);
-//    robot.keyRelease(KeyEvent.VK_SHIFT);
-//            robot.delay(100);
-// try
-//        {
-//            String letter="a";
-//            boolean upperCase = Character.isUpperCase( letter.charAt(0) );
-//            String variableName = "VK_" + letter.toUpperCase();
-//
-//            Class clazz = KeyEvent.class;
-//            Field field = clazz.getField( variableName );
-//            int keyCode = field.getInt(null);
-////            Thread.sleep(6000);
-////            robot.delay(1000);
-//
-//            if (upperCase) robot.keyPress( KeyEvent.VK_SHIFT );
-//
-//            robot.keyPress( keyCode );
-//            robot.keyRelease( keyCode );
-//
-//            if (upperCase) robot.keyRelease( KeyEvent.VK_SHIFT );
-//        }
-//        catch(Exception e)
-//        {
-//            System.out.println(e);
-//        }

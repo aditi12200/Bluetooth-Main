@@ -13,39 +13,31 @@
 
     <TextView
 
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:id="@+id/a"
-        android:layout_width="182dp"
-        android:layout_height="76dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="118dp"
-        android:layout_marginTop="59dp"
-        android:layout_marginEnd="111dp"
-        android:layout_marginBottom="594dp"
+
+        android:layout_marginStart="36dp"
+        android:layout_marginTop="23dp"
+        android:layout_marginEnd="193dp"
         android:fontFamily="@font/baloo"
         android:text="ADN"
-        android:textAlignment="center"
         android:textColor="@color/green"
-        android:textSize="65dp" />
+        android:textSize="55sp" />
     <EditText
         android:id="@+id/input"
         android:layout_width="wrap_content"
-        android:layout_height="69dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
+        android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="290dp"
+        android:layout_marginTop="130dp"
         android:layout_marginEnd="27dp"
-        android:layout_marginBottom="372dp"
         android:fontFamily="@font/baloo"
         android:background="@drawable/custom_textbox"
         android:drawablePadding="10dp"
+        android:inputType="textMultiLine"
+        android:textColorHint="#FFFFFFFF"
         android:hint="Enter text"
-        android:textSize="32dp" />
+        android:textSize="24sp" />
 
     <Button
         android:id="@+id/keyboard"
