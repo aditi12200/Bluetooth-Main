@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         IntentFilter intentFilter=new IntentFilter(BluetoothDevice.ACTION_FOUND);
         registerReceiver(myReceiever,intentFilter);
-        arrayAdapter=new ArrayAdapter<String>(getApplicationContext(),android.R.layout.simple_list_item_1,stringArrayList) {
+        arrayAdapter=new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,stringArrayList) {
 
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             }
         };
         scanlistview.setAdapter(arrayAdapter);
-        showExplanation("Warning", "ask for permission", Manifest.permission.ACCESS_COARSE_LOCATION, REQUEST_PERMISSION_ACCESS_COARSE_LOCATION);
+        showExplanation("Permission Required", "This app needs permission to access bluetooth", Manifest.permission.ACCESS_COARSE_LOCATION, REQUEST_PERMISSION_ACCESS_COARSE_LOCATION);
         IntentFilter filter=new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
         registerReceiver(myReceiever1,filter);
 
@@ -154,7 +154,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         @Override
         public void onReceive(Context context, Intent intent) {
             String action=intent.getAction();
-
             if(BluetoothDevice.ACTION_FOUND.equals(action)){
                 BluetoothDevice device=intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 String devicename=device.getName();
@@ -165,10 +164,13 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                         break;
                     }
                 }
-                if(newdevice)
-                    stringArrayList.add(device.getName());
-                deviceInfoList.add(device);
-                arrayAdapter.notifyDataSetChanged();
+                if(newdevice) {
+                    if(device.getName()!=null) {
+                        stringArrayList.add(device.getName());
+                        deviceInfoList.add(device);
+                        arrayAdapter.notifyDataSetChanged();
+                    }
+                }
             }
         }
     };
